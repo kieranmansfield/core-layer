@@ -1,10 +1,10 @@
 export default defineAppConfig({
-  baseLayer: {},
+  coreLayer: {},
 })
 
 declare module '@nuxt/schema' {
   interface AppConfigInput {
-    baseLayer?: {
+    coreLayer?: {
       /** Project name */
       name?: string
     }
