@@ -22,7 +22,7 @@
     "@eslint/json": "^0.14.0",
     "@eslint/markdown": "^7.5.1",
     "@nuxt/eslint": "latest",
-    "@types/node": "^24.10.7",
+    "@types/node": "^25.0.10",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
     "eslint": "^9.39.2",
@@ -30,12 +30,12 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-tailwindcss": "^3.18.2",
     "eslint-plugin-vue": "^10.7.0",
-    "nuxt": "^4.2.2",
-    "prettier": "^3.8.0",
+    "nuxt": "^4.3.0",
+    "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "^5.9.3",
     "vue": "latest",
-    "vue-tsc": "^3.2.2"
+    "vue-tsc": "^3.2.3"
   },
   "browserslist": [
     "> 0.5%",
