@@ -22,9 +22,37 @@ export default defineAppConfig({
       suggestions: {
         enabled: false,
         title: 'You might be looking for:',
-        links: []
-      }
-    }
+        links: [],
+      },
+    },
+
+    // Loading screen configuration (initial app load only)
+    loading: {
+      // Master toggle - set to false to disable completely
+      enabled: true,
+      // Minimum time to display loading screen (prevents flash)
+      minDuration: 3000, // Temporarily increased for testing
+      // Maximum time for simulated progress
+      maxDuration: 3000,
+      // Background color
+      background: '#0a0a0a',
+      // Progress text color
+      textColor: '#ffffff',
+      // Stack order
+      zIndex: 10000,
+    },
+
+    // Error handling configuration
+    errors: {
+      // Console logging (enabled in development by default)
+      logToConsole: true,
+      // External error service logging (disabled by default)
+      logToExternal: false,
+      // External error service URL (e.g., Sentry, LogRocket)
+      externalUrl: '',
+      // External error service token/key
+      externalToken: '',
+    },
   },
 })
 
@@ -90,6 +118,34 @@ declare module '@nuxt/schema' {
             icon?: string
           }>
         }
+      }
+
+      /** Loading screen configuration (initial app load only) */
+      loading?: {
+        /** Master toggle - set to false to disable completely */
+        enabled?: boolean
+        /** Minimum time to display loading screen (prevents flash) */
+        minDuration?: number
+        /** Maximum time for simulated progress */
+        maxDuration?: number
+        /** Background color */
+        background?: string
+        /** Progress text color */
+        textColor?: string
+        /** Stack order */
+        zIndex?: number
+      }
+
+      /** Error handling configuration */
+      errors?: {
+        /** Enable console logging in development */
+        logToConsole?: boolean
+        /** Enable external error service logging */
+        logToExternal?: boolean
+        /** External error service URL (e.g., Sentry, LogRocket) */
+        externalUrl?: string
+        /** External error service token/key */
+        externalToken?: string
       }
     }
   }

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 const appConfig = useAppConfig()
 const coreLayer = appConfig.coreLayer as { name?: string } | undefined
 
@@ -6,7 +6,7 @@ useSeoMeta({
   title: coreLayer?.name || 'Core Layer',
   description: 'Foundation layer for Nuxt applications',
 })
-</script>
+</script> -->
 
 <template>
   <div class="flex min-h-screen items-center justify-center p-4">

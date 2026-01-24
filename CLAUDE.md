@@ -208,44 +208,94 @@ const {
 
 ### 6. Loading System
 
-**Global loading state:**
+**Purpose:** Display a loading screen during **initial app load only**. Page transitions use Nuxt's built-in `useLoadingIndicator()`.
+
+**Architecture:**
+- No Pinia dependency (uses simple Vue refs)
+- Simulated progress (0→90% auto, waits at 90, then jumps to 100 on completion)
+- Shared state across all component instances (singleton pattern)
+- Can be disabled via app.config
+- Component can be replaced by projects
+
+**Basic usage:**
 ```typescript
-const { 
-  isLoading,
-  startLoading,
-  stopLoading 
+const {
+  isLoading,      // Ref<boolean> - Current loading state
+  progress,       // Ref<number> - Progress percentage (0-100)
+  startLoading,   // () => void - Start simulated progress
+  stopLoading,    // () => void - Jump to 100% and finish
+  updateProgress, // (value: number) => void - Manual progress update
+  withLoading     // (fn: () => Promise<void>) => Promise<void> - Wrapper
 } = useLoading()
 
-// Use it
-await startLoading()
+// Manual control
+startLoading()
 await fetchData()
 stopLoading()
 ```
 
-**Scoped loading:**
+**Async wrapper:**
 ```typescript
-const { loading, withLoading } = useLoading('checkout')
+const { withLoading } = useLoading()
 
 await withLoading(async () => {
-  // async operation
+  // Your async operation
+  await fetchData()
+  await processData()
 })
 ```
 
-**Component override:**
-Projects can replace `LoadingScreen.vue` entirely while still using the `useLoading()` logic.
-
-**Theme via app.config:**
+**Configuration via app.config:**
 ```typescript
 export default defineAppConfig({
-  loading: {
-    enabled: true,
-    logo: '/logo.svg',
-    background: 'var(--color-background)',
-    spinner: 'dots', // 'dots' | 'circle' | 'bar'
-    minDuration: 300, // Prevent flashing
+  coreLayer: {
+    loading: {
+      enabled: true,           // Master toggle
+      minDuration: 500,        // Min time to show (prevents flash)
+      maxDuration: 3000,       // Max simulated progress time
+      background: '#0a0a0a',   // Background color
+      textColor: '#ffffff',    // Progress text color
+      zIndex: 10000,           // Stack order
+    }
   }
 })
 ```
+
+**Disabling:**
+```typescript
+// In your project's app.config.ts
+export default defineAppConfig({
+  coreLayer: {
+    loading: {
+      enabled: false  // Completely disable loading screen
+    }
+  }
+})
+```
+
+**Custom loading screen:**
+Projects can replace the component entirely by creating their own `app/components/LoadingScreen.vue`:
+
+```vue
+<script setup>
+const { progress } = useLoading()
+const config = useAppConfig()
+</script>
+
+<template>
+  <div class="custom-loader">
+    <img :src="config.myApp.logo" alt="Loading" />
+    <div class="progress-bar" :style="{ width: `${progress}%` }" />
+  </div>
+</template>
+```
+
+**Important notes:**
+- Loading screen is for **initial app load only**
+- For page transitions, use Nuxt's `useLoadingIndicator()`
+- The composable works without the UI component (headless)
+- Progress is simulated, not based on real resource loading
+- Component automatically hides after reaching 100% + minDuration
 
 ### 7. Environment Management
 
@@ -352,6 +402,29 @@ const { subgrid, containerQueries } = useFeatures()
 
 ### Loading States
 
+**Note:** The `LoadingScreen` component is automatically shown during initial app load. You can also use `useLoading()` for custom loading states.
+
+```vue
+<script setup>
+const { isLoading, withLoading } = useLoading()
+
+async function handleSubmit() {
+  await withLoading(async () => {
+    await submitForm()
+  })
+}
+</script>
+
+<template>
+  <form @submit.prevent="handleSubmit">
+    <button :disabled="isLoading">
+      {{ isLoading ? 'Submitting...' : 'Submit' }}
+    </button>
+  </form>
+</template>
+```
+
+**Alternative with manual control:**
 ```vue
 <script setup>
 const { isLoading, startLoading, stopLoading } = useLoading()
@@ -372,9 +445,6 @@ async function handleSubmit() {
       {{ isLoading ? 'Submitting...' : 'Submit' }}
     </button>
   </form>
-  
-  <!-- Global loading overlay -->
-  <LoadingScreen v-if="isLoading" />
 </template>
 ```
 
@@ -478,21 +548,25 @@ export default defineNuxtConfig({
 ```typescript
 // app.config.ts
 export default defineAppConfig({
-  // Loading screen
-  loading: {
-    enabled: true,
-    logo: '/logo.svg',
-    background: '#ffffff',
-    spinner: 'dots',
-    minDuration: 300,
-  },
-  
-  // Error handling
-  errors: {
-    logToConsole: true,
-    logToExternal: false,
-    externalUrl: '',
-  },
+  coreLayer: {
+    // Loading screen (initial app load only)
+    loading: {
+      enabled: true,
+      minDuration: 500,        // Min time to show (prevents flash)
+      maxDuration: 3000,       // Max simulated progress time
+      background: '#0a0a0a',   // Background color
+      textColor: '#ffffff',    // Progress text color
+      zIndex: 10000,           // Stack order
+    },
+
+    // Error handling
+    errors: {
+      logToConsole: true,
+      logToExternal: false,
+      externalUrl: '',
+      externalToken: '',
+    },
+  }
 })
 ```
 
@@ -628,9 +702,11 @@ export default defineNuxtConfig({
 - Avoid `Date.now()`, `Math.random()` in SSR templates
 
 ### Loading Screen Not Showing
-- Check `loading.enabled` in app.config
-- Verify `useLoading()` is being called
-- Ensure LoadingScreen component is mounted
+- Check `coreLayer.loading.enabled` in app.config (must be `true` or omitted)
+- Verify the loading plugin is running (check browser console for errors)
+- Ensure LoadingScreen component is in `app.vue`
+- Check that `app:mounted` hook is firing (browser DevTools)
+- Try disabling browser extensions that might block fixed positioning
 
 ---
 

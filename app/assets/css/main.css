@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-@import './reset.css';
-@import './accessibility.css';
+@config '#layers/core/tailwind.config.js';
+
+@import '#layers/core/app/assets/css/reset.css';
+@import '#layers/core/app/assets/css/accessibility.css';

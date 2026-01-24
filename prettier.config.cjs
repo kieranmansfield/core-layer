@@ -5,12 +5,12 @@ module.exports = {
   trailingComma: 'es5',
   printWidth: 100,
   tabWidth: 2,
-  plugins: ['prettier-plugin-tailwindcss'],
-  tailwindConfig: './tailwind.config.js',
+  // plugins: ['prettier-plugin-tailwindcss'],
+  // tailwindConfig: './tailwind.config.js',
   ignorePath: '.prettierignore',
 
-  tailwindAttributes: ['class', 'ui'],
-  tailwindFunctions: ['tw'],
+  // tailwindAttributes: ['class', 'ui'],
+  // tailwindFunctions: ['tw'],
 
   // tailwindcss: {
   //   classRegex: [
